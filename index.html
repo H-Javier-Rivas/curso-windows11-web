@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Curso: Introducción a Windows 11 | Plataforma Interactiva</title>
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --success: #16a34a;
+      }
+
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+      }
+
+      /* Pantalla de Autenticación */
+      #auth-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+      }
+
+      .auth-card {
+        background: var(--card-bg);
+        padding: 2.5rem;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .auth-card h2 {
+        margin-top: 0;
+        color: var(--primary);
+        font-size: 1.5rem;
+      }
+
+      .auth-card p {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+      }
+
+      .auth-card input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        box-sizing: border-box;
+        text-align: center;
+        letter-spacing: 2px;
+      }
+
+      .auth-card button {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .auth-card button:hover {
+        background-color: var(--primary-dark);
+      }
+
+      .error-msg {
+        color: #dc2626;
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+        display: none;
+      }
+
+      /* Contenido Principal (Oculto hasta autenticarse) */
+      #main-app {
+        display: none;
+      }
+
+      header {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      header h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+        color: #0f172a;
+      }
+
+      .meta-info {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+      }
+
+      .meta-info span {
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      main {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+      }
+
+      .section-title {
+        font-size: 1.25rem;
+        color: #334155;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 0.5rem;
+      }
+
+      /* Cuadrícula de Lecciones */
+      .lessons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .lesson-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+
+      .lesson-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          border-color 0.2s;
+      }
+
+      .lesson-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+        border-color: var(--primary);
+      }
+
+      .lesson-card .badge-l {
+        background-color: #dbeafe;
+        color: var(--primary);
+        font-size: 1.25rem;
+        font-weight: 700;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 0 auto 1rem auto;
+      }
+
+      .lesson-card h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+        color: #0f172a;
+      }
+
+      .lesson-card p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      /* Secciones Interactivas (Bloc de notas y Consultas) */
+      .grid-tools {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+      }
+
+      @media (max-width: 768px) {
+        .grid-tools {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .tool-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+      }
+
+      .tool-card h3 {
+        margin-top: 0;
+        font-size: 1.1rem;
+        color: #0f172a;
+      }
+
+      textarea,
+      input[type="text"] {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        box-sizing: border-box;
+        margin-bottom: 1rem;
+      }
+
+      textarea {
+        resize: vertical;
+        height: 120px;
+      }
+
+      .btn {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: background 0.2s;
+      }
+
+      .btn:hover {
+        background-color: var(--primary-dark);
+      }
+
+      .success-banner {
+        background-color: #f0fdf4;
+        color: var(--success);
+        padding: 0.75rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: none;
+        text-align: center;
+      }
+
+      footer {
+        text-align: center;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        padding: 2rem 0;
+        border-top: 1px solid var(--border);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Pantalla de Validación de Clave -->
+    <div id="auth-screen">
+      <div class="auth-card">
+        <h2>Acceso al Curso</h2>
+        <p>
+          Introduce tu clave de acceso autorizada por el moderador para ingresar
+          a la plataforma.
+        </p>
+        <input type="password" id="access-key" placeholder="Clave de acceso" />
+        <button onclick="validateKey()">Ingresar al Curso</button>
+        <div id="error-message" class="error-msg">
+          Clave incorrecta. Verifica con tu moderador.
+        </div>
+      </div>
+    </div>
+
+    <!-- Aplicación Principal (Se muestra tras validar la clave) -->
+    <div id="main-app">
+      <header>
+        <h1>Introducción a Windows 11</h1>
+        <div class="meta-info">
+          Duración: <span>4 Horas</span> | Creador y Moderador:
+          <span>H. Javier Rivas</span> | Modalidad:
+          <span>Aplicación Web Dinámica</span>
+        </div>
+      </header>
+
+      <main>
+        <h2 class="section-title">Módulos de Lecciones (Lapsos de 1 Hora)</h2>
+        <div class="lessons-grid">
+          <!-- Enlace Activo a la Lección 1 -->
+          <a href="leccion1_momento1.html" class="lesson-card-link">
+            <div class="lesson-card">
+              <div class="badge-l">L1</div>
+              <h3>Primeros Pasos y Escritorio</h3>
+              <p>Anatomía del sistema, barra de tareas y archivos básicos.</p>
+            </div>
+          </a>
+
+          <div class="lesson-card" style="opacity: 0.6; cursor: not-allowed">
+            <div
+              class="badge-l"
+              style="background-color: #f1f5f9; color: #94a3b8"
+            >
+              L2
+            </div>
+            <h3>Gestión de Archivos</h3>
+            <p>Explorador, carpetas y organización segura (Próximamente).</p>
+          </div>
+
+          <div class="lesson-card" style="opacity: 0.6; cursor: not-allowed">
+            <div
+              class="badge-l"
+              style="background-color: #f1f5f9; color: #94a3b8"
+            >
+              L3
+            </div>
+            <h3>Aplicaciones Esenciales</h3>
+            <p>Bloc de notas y navegación web inicial (Próximamente).</p>
+          </div>
+
+          <div class="lesson-card" style="opacity: 0.6; cursor: not-allowed">
+            <div
+              class="badge-l"
+              style="background-color: #f1f5f9; color: #94a3b8"
+            >
+              L4
+            </div>
+            <h3>Configuración y Seguridad</h3>
+            <p>Panel de control, redes y apagado seguro (Próximamente).</p>
+          </div>
+        </div>
+
+        <!-- Herramientas de Apoyo para el Cuarto Momento -->
+        <div class="grid-tools">
+          <!-- Bloc de Notas Personal -->
+          <div class="tool-card">
+            <h3>📝 Bloc de Notas Personal</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted)">
+              Toma apuntes durante el Cuarto Momento de cada clase. Se guardan
+              en tu equipo localmente.
+            </p>
+            <textarea
+              id="student-notes"
+              placeholder="Escribe tus notas de aprendizaje aquí..."
+            ></textarea>
+            <button class="btn" onclick="saveNotes()">Guardar Apuntes</button>
+            <div id="notes-success" class="success-banner">
+              ¡Apuntes guardados con éxito en tu navegador!
+            </div>
+          </div>
+
+          <!-- Buzón de Consultas al Moderador -->
+          <div class="tool-card">
+            <h3>💬 Consultas al Moderador</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted)">
+              Envía dudas sobre los ejercicios prácticos directamente a H.
+              Javier Rivas.
+            </p>
+            <input
+              type="text"
+              id="student-name"
+              placeholder="Tu nombre completo"
+            />
+            <textarea
+              id="student-query"
+              placeholder="Escribe tu consulta o comentario del ejercicio..."
+              style="height: 60px"
+            ></textarea>
+            <button class="btn" onclick="sendQuery()">Enviar Consulta</button>
+            <div id="query-success" class="success-banner">
+              ¡Consulta registrada para revisión del moderador!
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <p>
+          Plataforma Académica de Cursos de Computación • Dirigido por H. Javier
+          Rivas
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      // Sistema simple de control de acceso por clave
+      function validateKey() {
+        const keyInput = document.getElementById("access-key").value.trim();
+        const errorMsg = document.getElementById("error-message");
+
+        // Clave predeterminada de autorización del moderador (puedes cambiarla o adaptarla)
+        const validKey = "RIVAS2026";
+
+        if (keyInput === validKey) {
+          document.getElementById("auth-screen").style.display = "none";
+          document.getElementById("main-app").style.display = "block";
+          // Cargar notas guardadas previamente si existen
+          const savedNotes = localStorage.getItem("curso_win11_notas");
+          if (savedNotes) {
+            document.getElementById("student-notes").value = savedNotes;
+          }
+        } else {
+          errorMsg.style.display = "block";
+        }
+      }
+
+      // Guardar notas localmente
+      function saveNotes() {
+        const notes = document.getElementById("student-notes").value;
+        localStorage.setItem("curso_win11_notas", notes);
+        const banner = document.getElementById("notes-success");
+        banner.style.display = "block";
+        setTimeout(() => {
+          banner.style.display = "none";
+        }, 3000);
+      }
+
+      // Simular envío de consulta al moderador
+      function sendQuery() {
+        const name = document.getElementById("student-name").value.trim();
+        const query = document.getElementById("student-query").value.trim();
+        if (name && query) {
+          const banner = document.getElementById("query-success");
+          banner.style.display = "block";
+          document.getElementById("student-query").value = "";
+          setTimeout(() => {
+            banner.style.display = "none";
+          }, 3000);
+        } else {
+          alert("Por favor completa tu nombre y tu consulta.");
+        }
+      }
+    </script>
+  </body>
+</html>
